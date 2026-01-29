@@ -144,15 +144,16 @@ export class SpineController {
       return fallback;
     }
 
-    const nameMap = new Map<string, string>();
-    for (const name of available) {
-      nameMap.set(name.toLowerCase(), name);
-    }
-
+    const lowered = available.map((name) => ({ raw: name, lower: name.toLowerCase() }));
     for (const candidate of candidates) {
-      const match = nameMap.get(candidate.toLowerCase());
-      if (match) {
-        return match;
+      const needle = candidate.toLowerCase();
+      const exact = lowered.find((entry) => entry.lower === needle);
+      if (exact) {
+        return exact.raw;
+      }
+      const partial = lowered.find((entry) => entry.lower.includes(needle));
+      if (partial) {
+        return partial.raw;
       }
     }
 
